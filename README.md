@@ -1,5 +1,7 @@
 # ComfileTech.ComfilePi.CP_IO13_4C.Demo
 
+<img src="./images/screenshot.png" />
+
 This is a .NET Framework Winforms application to demonstrate features of the [CP-IO13-4C](https://comfiletech.com/raspberry-pi-panel-pc/cp-io13-4c-i-o-board-accessory-for-cpi-c-series/) IO board for the [ComfilePi industrial touchscreen panel PCs](https://comfiletech.com/linux-panel-pc/), and how to program it.
 
 Execution on a ComfilePi panel PC requires [Mono](https://gitlab.winehq.org/mono/mono), which should already be installed by default on the ComfilePi panel PCs.
