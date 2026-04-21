@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../.gitignore" />
+    <File Path="../README.md" />
+  </Folder>
+  <Project Path="ComfileTech.ComfilePi.CP_IO13_4C.Demo/ComfileTech.ComfilePi.CP_IO13_4C.Demo.csproj" />
+  <Project Path="ComfileTech.ComfilePi.CP_IO13_4C/ComfileTech.ComfilePi.CP_IO13_4C.csproj" />
+</Solution>

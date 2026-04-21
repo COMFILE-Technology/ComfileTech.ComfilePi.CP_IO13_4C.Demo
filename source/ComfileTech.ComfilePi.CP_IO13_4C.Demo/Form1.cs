@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace ComfileTech.ComfilePi.CP_IO13_4C.Demo
@@ -13,8 +14,10 @@ namespace ComfileTech.ComfilePi.CP_IO13_4C.Demo
     public partial class Form1 : Form
     {
         public Form1()
-        { 
+        {
             InitializeComponent();
+
+            var uiContext = SynchronizationContext.Current;
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
@@ -35,15 +38,26 @@ namespace ComfileTech.ComfilePi.CP_IO13_4C.Demo
             int index = 0;
             foreach (var input in CP_IO13_4C.Instance.DigitalInputs)
             {
-                int i = index;
-
-                var lamp = lamps[i];
+                var lamp = lamps[index];
                 lamp.State = input.State;
                 lamp.Text = input.Number.ToString();
 
-                input.StateChanged += (di) =>
+                input.StateChanged += di =>
                 {
-                    lamp.State = di.State;
+                    if (uiContext != null)
+                    {
+                        uiContext.Post(_ =>
+                        {
+                            if (!IsDisposed && !lamp.IsDisposed)
+                            {
+                                lamp.State = di.State;
+                            }
+                        }, null);
+                    }
+                    else if (!IsDisposed && !lamp.IsDisposed)
+                    {
+                        lamp.State = di.State;
+                    }
                 };
 
                 index++;
@@ -55,9 +69,7 @@ namespace ComfileTech.ComfilePi.CP_IO13_4C.Demo
             index = 0;
             foreach (var output in CP_IO13_4C.Instance.DigitalOutputs)
             {
-                int i = index;
-
-                var button = buttons[i];
+                var button = buttons[index];
                 button.State = output.State;
                 button.Text = output.Number.ToString();
 
@@ -72,8 +84,14 @@ namespace ComfileTech.ComfilePi.CP_IO13_4C.Demo
 
         private void _repositoryUrl_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            var linkLabel = sender as LinkLabel;
-            System.Diagnostics.Process.Start(linkLabel.Text);
+            if (sender is LinkLabel linkLabel)
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = linkLabel.Text,
+                    UseShellExecute = true
+                });
+            }
         }
 
         void SerialTest(SerialPort port, Label label)
