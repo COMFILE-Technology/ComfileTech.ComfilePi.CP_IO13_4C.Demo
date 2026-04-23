@@ -6,20 +6,12 @@ namespace ComfileTech.ComfilePi.CP_IO13_4C
     /// <summary>
     /// Represents the CP-IO13-4C IO board connected to the ComfilePi.
     /// </summary>
-    public class CP_IO13_4C
+    public class CP_IO13_4C : System.IDisposable
     {
-        static CP_IO13_4C()
-        {
-            Instance = new CP_IO13_4C();
-        }
-
         /// <summary>
         /// The singleton instance of this class.
         /// </summary>
-        public static CP_IO13_4C Instance
-        {
-            get; private set;
-        }
+        public static CP_IO13_4C Instance { get; } = new CP_IO13_4C();
 
         private CP_IO13_4C()
         {
@@ -84,6 +76,30 @@ namespace ComfileTech.ComfilePi.CP_IO13_4C
         public IReadOnlyList<SerialPort> SerialPorts
         {
             get;
+        }
+
+        bool _disposed;
+
+        /// <summary>
+        /// Releases the GPIO and serial port resources used by the IO board.
+        /// </summary>
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            DigitalInput.DisposeGpioController();
+            DigitalOutput.DisposeGpioController();
+
+            foreach (var port in SerialPorts)
+            {
+                port.Dispose();
+            }
+
+            _disposed = true;
+            System.GC.SuppressFinalize(this);
         }
     }
 }

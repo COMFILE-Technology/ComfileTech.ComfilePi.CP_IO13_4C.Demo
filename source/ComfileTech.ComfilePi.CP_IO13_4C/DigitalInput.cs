@@ -14,5 +14,10 @@ namespace ComfileTech.ComfilePi.CP_IO13_4C
         internal DigitalInput(int number)
             : base(number, PinMode.Input)
         { }
+
+        internal static void DisposeGpioController()
+        {
+            DisposeGpioControllerCore();
+        }
     }
 }

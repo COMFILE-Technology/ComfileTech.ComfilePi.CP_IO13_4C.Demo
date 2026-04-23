@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ComfileTech.ComfilePi.CP_IO13_4C;
 
 namespace ComfileTech.ComfilePi.CP_IO13_4C.Demo
 {
@@ -16,7 +17,14 @@ namespace ComfileTech.ComfilePi.CP_IO13_4C.Demo
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            try
+            {
+                Application.Run(new Form1());
+            }
+            finally
+            {
+                CP_IO13_4C.Instance.Dispose();
+            }
         }
     }
 }
