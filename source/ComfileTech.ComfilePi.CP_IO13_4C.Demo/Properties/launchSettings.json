@@ -5,7 +5,7 @@
     },
     "Remote linux-arm64": {
       "commandName": "RemoteDotnetDebugger",
-      "RemoteMachine": "192.168.0.2",
+      "RemoteMachine": "192.168.0.101",
       "RemoteUser": "pi"
     }
   }
