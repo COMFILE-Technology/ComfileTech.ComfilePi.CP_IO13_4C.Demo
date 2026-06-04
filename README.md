@@ -11,7 +11,7 @@ This application uses the following .NET libraries:
 * [System.IO.Ports](https://www.nuget.org/packages/System.IO.Ports/)
 * [ComfileTech.WinForms](https://www.comfilewiki.co.kr/en/doku.php?id=winforms:index)
 
-Both the `ComfileTech.ComfilePi.CP_IO13_4C.Demo` project and the `ComfileTech.ComfilePi.CP_IO13_4C` project now target .NET 10.
+Both the `ComfileTech.ComfilePi.CP_IO13_4C.Demo` project and the `ComfileTech.ComfilePi.CP_IO13_4C` project target .NET 10.
 
 ## Deploying to and Debugging on a ComfilePi Panel PC
 

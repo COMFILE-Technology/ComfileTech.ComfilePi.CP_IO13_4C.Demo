@@ -7,6 +7,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ComfileTech.ComfilePi.CP_IO13_4C.Demo
@@ -94,11 +95,48 @@ namespace ComfileTech.ComfilePi.CP_IO13_4C.Demo
             }
         }
 
-        void SerialTest(SerialPort port, Label label)
+        async Task SerialTestAsync(SerialPort port, Label label, System.Windows.Forms.Button button)
         {
-            label.Text = string.Empty;
-            label.ForeColor = Color.White;
+            button.Enabled = false;
+            SetSerialTestResult(label, string.Empty, Color.White);
+
+            var progress = new Progress<string>(status =>
+            {
+                SetSerialTestResult(label, status, Color.White);
+            });
+
+            try
+            {
+                await Task.Run(() => SerialTest(port, progress));
+
+                SetSerialTestResult(label, "PASS", Color.FromArgb(128, 255, 128));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+
+                SetSerialTestResult(label, "FAIL", Color.FromArgb(255, 128, 128));
+            }
+            finally
+            {
+                if (port.IsOpen)
+                {
+                    port.Close();
+                }
+
+                button.Enabled = true;
+            }
+        }
+
+        static void SetSerialTestResult(Label label, string text, Color color)
+        {
+            label.Text = text;
+            label.ForeColor = color;
             label.Update();
+        }
+
+        static void SerialTest(SerialPort port, IProgress<string> progress)
+        {
 
             var baudrates = new int[]
             {
@@ -140,9 +178,7 @@ namespace ComfileTech.ComfilePi.CP_IO13_4C.Demo
                 {
                     foreach (var parity in parities)
                     {
-                        label.Text = $"Testing {baud},{parity}";
-                        label.ForeColor = Color.White;
-                        label.Update();
+                        progress.Report($"Testing {baud},{parity}");
 
                         port.Write(txBytes, 0, txBytes.Length);
 
@@ -159,20 +195,13 @@ namespace ComfileTech.ComfilePi.CP_IO13_4C.Demo
                         }
                     }
                 }
-
-                port.Close();
-
-                label.Text = "PASS";
-                label.ForeColor = Color.FromArgb(128, 255, 128);
-                label.Update();
             }
-            catch (Exception ex)
+            finally
             {
-                Console.WriteLine(ex.Message);
-
-                label.Text = "FAIL";
-                label.ForeColor = Color.FromArgb(255, 128, 128);
-                label.Update();
+                if (port.IsOpen)
+                {
+                    port.Close();
+                }
             }
         }
 
@@ -181,14 +210,14 @@ namespace ComfileTech.ComfilePi.CP_IO13_4C.Demo
             Close();
         }
 
-        private void _serial2Button_Click(object sender, EventArgs e)
+        private async void _serial2Button_Click(object sender, EventArgs e)
         {
-            SerialTest(CP_IO13_4C.Instance.SerialPorts[0], _serial2Result);
+            await SerialTestAsync(CP_IO13_4C.Instance.SerialPorts[0], _serial2Result, _serial2Button);
         }
 
-        private void _serial3Button_Click(object sender, EventArgs e)
+        private async void _serial3Button_Click(object sender, EventArgs e)
         {
-            SerialTest(CP_IO13_4C.Instance.SerialPorts[1], _serial3Result);
+            await SerialTestAsync(CP_IO13_4C.Instance.SerialPorts[1], _serial3Result, _serial3Button);
         }
     }
 }
